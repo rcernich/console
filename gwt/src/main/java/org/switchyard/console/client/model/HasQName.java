@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -18,55 +18,33 @@
  */
 package org.switchyard.console.client.model;
 
-import java.util.List;
-
 /**
- * Service
+ * HasQName
  * 
- * Represents a SwitchYard service.
+ * Used with types where the "name" attribute represents a QName.
  * 
  * @author Rob Cernich
  */
-public interface Service extends HasQName {
+public interface HasQName {
 
     /**
-     * @return the interface name
+     * @return the name.
      */
-    public String getInterface();
+    public String getName();
 
     /**
-     * @param interfaceName the interface name
+     * @param name the name.
      */
-    public void setInterface(String interfaceName);
+    public void setName(String name);
 
     /**
-     * @return the promoted service's name
+     * @return the "local" part of the name.
      */
-    public String getPromotedService();
-
+    public String localName();
+    
     /**
-     * @param promotedService the promoted service's name
+     * @return the "namespace" part of the name.
      */
-    public void setPromotedService(String promotedService);
-
-    /**
-     * @return the gateways
-     */
-    List<Binding> getGateways();
-
-    /**
-     * @param gateways the gateways
-     */
-    public void setGateways(List<Binding> gateways);
-
-    /**
-     * @return the application name
-     */
-    public String getApplication();
-
-    /**
-     * @param application the application name
-     */
-    public void setApplication(String application);
+    public String namespace();
 
 }

@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -16,25 +16,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.model;
+package org.switchyard.console.client.gin;
+
+import org.jboss.as.console.client.core.gin.CoreUI;
 
 /**
- * ComponentReference
+ * AggregatedConsoleGinjector
  * 
- * Represents a SwitchYard component reference.
+ * Ginjector interface which collects the core AS console and SwitchYard
+ * specific Ginjectors.
  * 
  * @author Rob Cernich
  */
-public interface ComponentReference extends HasQName {
-
-    /**
-     * @return the interface name
-     */
-    public String getInterface();
-
-    /**
-     * @param interfaceName the interface name
-     */
-    public void setInterface(String interfaceName);
+public interface AggregatedConsoleGinjector extends CoreUI, SwitchYardGinjector {
 
 }

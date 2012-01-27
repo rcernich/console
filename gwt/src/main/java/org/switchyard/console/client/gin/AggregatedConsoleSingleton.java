@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -16,25 +16,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.model;
+package org.switchyard.console.client.gin;
+
+import org.jboss.as.console.client.core.gin.CoreUI;
+import org.jboss.as.console.client.core.gin.GinjectorSingleton;
+
+import com.google.gwt.core.client.GWT;
 
 /**
- * ComponentReference
+ * AggregatedConsoleSingleton
  * 
- * Represents a SwitchYard component reference.
+ * GinjectorSingleton that serves up the "aggregated" Ginjector.
  * 
  * @author Rob Cernich
  */
-public interface ComponentReference extends HasQName {
+public class AggregatedConsoleSingleton implements GinjectorSingleton {
 
-    /**
-     * @return the interface name
-     */
-    public String getInterface();
+    private static final CoreUI INSTANCE = GWT.create(AggregatedConsoleGinjector.class);
 
-    /**
-     * @param interfaceName the interface name
-     */
-    public void setInterface(String interfaceName);
+    @Override
+    public CoreUI getCoreUI() {
+        return INSTANCE;
+    }
 
 }

@@ -90,47 +90,33 @@
       <artifactId>gwt-user</artifactId>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.code</groupId>
+      <artifactId>gwt-visualization</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>com.google.code.gwt-log</groupId>
       <artifactId>gwt-log</artifactId>
     </dependency>
     <dependency>
       <groupId>com.gwtplatform</groupId>
-      <artifactId>gwtp-all</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-web</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.sourceforge.htmlunit</groupId>
-          <artifactId>crawl_htmlunit</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>gwtp-mvp-client</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt.inject</groupId>
-      <artifactId>gin</artifactId>
+      <groupId>com.google.inject.extensions</groupId>
+      <artifactId>guice-assistedinject</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mycila.com.google.inject.extensions</groupId>
-      <artifactId>guice-assisted-inject</artifactId>
+      <groupId>com.google.gwt.inject</groupId>
+      <artifactId>gin</artifactId>
     </dependency>
 
     <dependency>
@@ -141,20 +127,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <type>jar</type>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- managment api -->
-    <dependency>
-    	<groupId>org.jboss</groupId>
-    	<artifactId>jboss-dmr</artifactId>
-    	<scope>provided</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.jboss.as</groupId>
-    	<artifactId>jboss-as-controller-client</artifactId>
-    	<scope>provided</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -181,9 +154,27 @@
                   <artifactId>jboss-as-console</artifactId>
                   <classifier>sources</classifier>
                   <type>jar</type>
-                  <includes>org/jboss/dmr/**,org/jboss/as/console/client/widgets/**,org/jboss/as/console/client/auth/**,org/jboss/as/console/client/core/*.*,org/jboss/as/console/client/core/message/*.*,org/jboss/as/console/client/shared/*.*,org/jboss/as/console/client/shared/dispatch/**,org/jboss/as/console/client/Build.java,org/jboss/as/console/client/ConsoleFramework.java,org/jboss/as/console/public/**,gwt-proxy.properties</includes>
-                  <excludes>org/jboss/as/console/client/shared/BeanFactory.java</excludes>
+                  <excludes>org/jboss/as/console/client/Console.java,org/jboss/as/console/client/shared/SubsystemMetaData.java</excludes>
                   <outputDirectory>${asConsoleIncludesDirectory}/java</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-jboss-as-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.jboss.as</groupId>
+                  <artifactId>jboss-as-console</artifactId>
+                  <classifier>resources</classifier>
+                  <type>jar</type>
+                  <includes>images/**,App.html,index.html</includes>
+                  <outputDirectory>${webappDirectory}</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -218,7 +209,6 @@
         <executions>
           <execution>
             <goals>
-              <goal>resources</goal>
               <goal>compile</goal>
               <goal>test</goal>
               <goal>i18n</goal>
@@ -233,7 +223,10 @@
           <i18nMessagesBundle>org.switchyard.console.client.Messages</i18nMessagesBundle>
           <logLevel>TRACE</logLevel>
           <mode>htmlunit</mode>
-          <runTarget>SwitchYard.html</runTarget>
+          <runTarget>App.html</runTarget>
+          <module>org.switchyard.console.SwitchYard</module>
+          <extraJvmArgs>-Xmx512m</extraJvmArgs>
+          <localWorkers>2</localWorkers>
         </configuration>
       </plugin>
 
@@ -249,6 +242,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <packagingExcludes>WEB-INF/**,WEB-INF/web.xml</packagingExcludes>
+        </configuration>
       </plugin>
 
       <!-- Remove GWT tests -->
@@ -262,5 +259,21 @@
       </plugin>
     </plugins>
   </build>
-
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>gwt-maven-plugin</artifactId>
+            <configuration>
+              <module>org.switchyard.console.Development_FF</module>
+              <style>PRETTY</style>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

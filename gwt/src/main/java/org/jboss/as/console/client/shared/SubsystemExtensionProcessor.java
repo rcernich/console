@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -16,25 +16,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.model;
+package org.jboss.as.console.client.shared;
+
+import java.util.Map;
 
 /**
- * ComponentReference
+ * SubsystemExtensionProcessor
  * 
- * Represents a SwitchYard component reference.
+ * Processes subsystem extensions and adds them to the groups list.
  * 
  * @author Rob Cernich
  */
-public interface ComponentReference extends HasQName {
+public interface SubsystemExtensionProcessor {
 
     /**
-     * @return the interface name
+     * Adds entries corresponding to extended subsystems.
+     * 
+     * @param groups the container for the groups.
      */
-    public String getInterface();
-
-    /**
-     * @param interfaceName the interface name
-     */
-    public void setInterface(String interfaceName);
-
+    public void processExtensions(Map<String, SubsystemGroup> groups);
 }

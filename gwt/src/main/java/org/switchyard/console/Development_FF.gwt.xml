@@ -19,22 +19,8 @@
 
 <module rename-to="app">
 
-  <inherits name="org.jboss.as.console.App" />
-  <inherits name="org.switchyard.console.Extensions" />
-
-  <set-configuration-property name="gin.ginjector"
-    value="org.switchyard.console.client.gin.AggregatedConsoleGinjector" />
-
-  <replace-with class="org.switchyard.console.client.gin.AggregatedConsoleSingleton">
-    <when-type-is class="org.jboss.as.console.client.core.gin.GinjectorSingleton" />
-  </replace-with>
-
-  <generate-with class="org.jboss.as.console.rebind.extensions.SubsystemExtensionProcessorGenerator">
-    <when-type-assignable class="org.jboss.as.console.client.shared.SubsystemExtensionProcessor" />
-  </generate-with>
-
-	<!-- Specify the paths for translatable code -->
-  <source path='client' />
-  <source path='shared' />
+  <inherits name="org.switchyard.console.SwitchYard" />
+  <set-property name="user.agent" value="gecko1_8" />
+  <set-property name="locale" value="default" />
 
 </module>

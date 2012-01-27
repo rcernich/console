@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -16,25 +16,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.model;
+package org.jboss.as.console.client.core.gin;
 
 /**
- * ComponentReference
+ * GinjectorSingleton
  * 
- * Represents a SwitchYard component reference.
+ * <p/>
+ * Simple API which uses deferred binding to initialize the application
+ * Ginjector. This can be implemented by console aggregators to provide an
+ * extended CoreUI Ginjector (i.e. a Ginjector that includes extended
+ * presentation bindings in addition to CoreUI).
+ * 
+ * <p/>
+ * For example:
+ * 
+ * <pre>
+ * <code>
+ * private static final CoreUI instance = GWT.create(CoreUI.class);
+ * 
+ * public CoreUI getCoreUI() {
+ *    return instance;
+ * }
+ * </code>
+ * </pre>
  * 
  * @author Rob Cernich
  */
-public interface ComponentReference extends HasQName {
+public interface GinjectorSingleton {
 
     /**
-     * @return the interface name
+     * @return the CoreUI Ginjector.
      */
-    public String getInterface();
-
-    /**
-     * @param interfaceName the interface name
-     */
-    public void setInterface(String interfaceName);
-
+    CoreUI getCoreUI();
 }

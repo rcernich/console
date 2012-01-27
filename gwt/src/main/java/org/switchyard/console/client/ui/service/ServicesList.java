@@ -16,69 +16,72 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.ui.application;
+package org.switchyard.console.client.ui.service;
 
 import org.jboss.ballroom.client.widgets.tables.DefaultCellTable;
-import org.switchyard.console.client.model.ComponentReference;
+import org.switchyard.console.client.model.Service;
 import org.switchyard.console.client.ui.common.AbstractDataTable;
 
+import com.google.gwt.cell.client.ClickableTextCell;
+import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 
 /**
- * ComponentReferencesList
+ * ServicesList
  * 
- * Wraps a table control for displaying a service's references.
+ * Wraps a table control for displaying an application's services.
  * 
  * @author Rob Cernich
  */
-public class ComponentReferencesList extends AbstractDataTable<ComponentReference> {
+public class ServicesList extends AbstractDataTable<Service> {
 
-    private static final ProvidesKey<ComponentReference> KEY_PROVIDER = new ProvidesKey<ComponentReference>() {
+    private static final ProvidesKey<Service> KEY_PROVIDER = new ProvidesKey<Service>() {
         @Override
-        public Object getKey(ComponentReference item) {
+        public Object getKey(Service item) {
             return item.getName();
         }
     };
 
-    ComponentReferencesList() {
-        super("References");
+    ServicesList() {
+        super("Services");
     }
 
-    protected void createColumns(DefaultCellTable<ComponentReference> table,
-            ListDataProvider<ComponentReference> dataProvider) {
-        TextColumn<ComponentReference> nameColumn = new TextColumn<ComponentReference>() {
+    @Override
+    protected void createColumns(DefaultCellTable<Service> table, ListDataProvider<Service> dataProvider) {
+        Column<Service, String> nameColumn = new Column<Service, String>(new ClickableTextCell()) {
             @Override
-            public String getValue(ComponentReference reference) {
-                return reference.localName();
+            public String getValue(Service service) {
+                return service.localName();
             }
         };
         nameColumn.setSortable(true);
 
-        TextColumn<ComponentReference> interfaceColumn = new TextColumn<ComponentReference>() {
+        final TextColumn<Service> namespaceColumn = new TextColumn<Service>() {
             @Override
-            public String getValue(ComponentReference reference) {
-                return reference.getInterface();
+            public String getValue(Service service) {
+                return service.namespace();
             }
         };
-        interfaceColumn.setSortable(true);
+        namespaceColumn.setSortable(true);
 
-        ColumnSortEvent.ListHandler<ComponentReference> sortHandler = new ColumnSortEvent.ListHandler<ComponentReference>(
+        ColumnSortEvent.ListHandler<Service> sortHandler = new ColumnSortEvent.ListHandler<Service>(
                 dataProvider.getList());
         sortHandler.setComparator(nameColumn, createColumnCommparator(nameColumn));
-        sortHandler.setComparator(interfaceColumn, createColumnCommparator(interfaceColumn));
+        sortHandler.setComparator(namespaceColumn, createColumnCommparator(namespaceColumn));
 
         table.addColumn(nameColumn, "Name");
-        table.addColumn(interfaceColumn, "Interface");
+        table.addColumn(namespaceColumn, "Target Namespace");
 
         table.addColumnSortHandler(sortHandler);
+        table.getColumnSortList().push(namespaceColumn);
         table.getColumnSortList().push(nameColumn);
     }
 
     @Override
-    protected ProvidesKey<ComponentReference> createKeyProvider() {
+    protected ProvidesKey<Service> createKeyProvider() {
         return KEY_PROVIDER;
     }
 

@@ -18,34 +18,28 @@
  */
 package org.switchyard.console.client.ui.application;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.jboss.ballroom.client.widgets.tables.DefaultCellTable;
 import org.switchyard.console.client.NameTokens;
 import org.switchyard.console.client.model.Application;
 import org.switchyard.console.client.model.Service;
-import org.switchyard.console.client.ui.common.AlwaysFireSingleSelectionModel;
+import org.switchyard.console.client.ui.common.AbstractDataTable;
 
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
-import com.google.gwt.view.client.SelectionChangeEvent;
 
 /**
- * ServicesList
+ * ApplicationServicesList
  * 
  * Wraps a table control for displaying an application's services.
  * 
  * @author Rob Cernich
  */
-public class ServicesList {
+public class ApplicationServicesList extends AbstractDataTable<Service> {
 
     private static final ProvidesKey<Service> KEY_PROVIDER = new ProvidesKey<Service>() {
         @Override
@@ -54,24 +48,26 @@ public class ServicesList {
         }
     };
 
-    private String _applicationName;
-    private DefaultCellTable<Service> _servicesTable;
-    private AlwaysFireSingleSelectionModel<Service> _selectionModel;
-    private ListDataProvider<Service> _servicesDataProvider;
+    private Application _application;
+    private final ApplicationPresenter _presenter;
 
-    ServicesList() {
-        _servicesTable = new DefaultCellTable<Service>(5);
+    ApplicationServicesList(ApplicationPresenter presenter) {
+        super("Services");
+        _presenter = presenter;
+    }
 
+    @Override
+    protected void createColumns(DefaultCellTable<Service> table, ListDataProvider<Service> dataProvider) {
         Column<Service, String> nameColumn = new Column<Service, String>(new ClickableTextCell()) {
             @Override
             public String getValue(Service service) {
-                return NameTokens.parseQName(service.getName())[1];
+                return service.localName();
             }
         };
         nameColumn.setFieldUpdater(new FieldUpdater<Service, String>() {
             @Override
             public void update(int index, Service object, String value) {
-                History.newItem(NameTokens.createServiceLink(object.getName(), _applicationName));
+                _presenter.onNavigateToService(object, _application);
             }
         });
         nameColumn.setSortable(true);
@@ -84,58 +80,29 @@ public class ServicesList {
         };
         promotesColumn.setSortable(true);
 
-        _servicesTable.addColumn(nameColumn, "Name");
-        _servicesTable.addColumn(promotesColumn, "Promoted Service");
+        ColumnSortEvent.ListHandler<Service> sortHandler = new ColumnSortEvent.ListHandler<Service>(
+                dataProvider.getList());
+        sortHandler.setComparator(nameColumn, createColumnCommparator(nameColumn));
+        sortHandler.setComparator(promotesColumn, createColumnCommparator(promotesColumn));
 
-        _selectionModel = new AlwaysFireSingleSelectionModel<Service>();
-        _servicesTable.setSelectionModel(_selectionModel);
+        table.addColumn(nameColumn, "Name");
+        table.addColumn(promotesColumn, "Promoted Service");
 
-        _servicesDataProvider = new ListDataProvider<Service>(KEY_PROVIDER);
-        _servicesDataProvider.addDataDisplay(_servicesTable);
-    }
-
-    /**
-     * @return this object's widget.
-     */
-    public Widget asWidget() {
-        return _servicesTable;
-    }
-
-    /**
-     * Register a selection change handler with the services list.
-     * 
-     * @param handler the handler
-     * @return the {@link HandlerRegistration}
-     */
-    public HandlerRegistration addSelectionChangeHandler(SelectionChangeEvent.Handler handler) {
-        return _selectionModel.addSelectionChangeHandler(handler);
-    }
-
-    /**
-     * @return the selected service
-     */
-    public Service getSelection() {
-        return _selectionModel.getSelected();
-    }
-
-    /**
-     * Selects the specified service in the list.
-     * 
-     * @param service the service to select.
-     */
-    public void setSelection(Service service) {
-        _selectionModel.setSelected(service, true);
+        table.addColumnSortHandler(sortHandler);
+        table.getColumnSortList().push(nameColumn);
     }
 
     /**
      * @param application the application providing the data.
      */
     public void setApplication(Application application) {
-        _applicationName = application.getName();
-        List<Service> services = application.getServices();
-        if (services == null) {
-            services = Collections.emptyList();
-        }
-        _servicesDataProvider.setList(services);
+        _application = application;
+        setData(application.getServices());
     }
+
+    @Override
+    protected ProvidesKey<Service> createKeyProvider() {
+        return KEY_PROVIDER;
+    }
+
 }

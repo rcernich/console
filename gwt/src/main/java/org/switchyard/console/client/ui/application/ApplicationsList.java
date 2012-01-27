@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -19,7 +19,7 @@
 package org.switchyard.console.client.ui.application;
 
 import org.jboss.ballroom.client.widgets.tables.DefaultCellTable;
-import org.switchyard.console.client.model.ComponentReference;
+import org.switchyard.console.client.model.Application;
 import org.switchyard.console.client.ui.common.AbstractDataTable;
 
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
@@ -28,58 +28,63 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.ProvidesKey;
 
 /**
- * ComponentReferencesList
+ * ApplicationsList
  * 
- * Wraps a table control for displaying a service's references.
+ * Wraps a table control for displaying applications.
  * 
  * @author Rob Cernich
  */
-public class ComponentReferencesList extends AbstractDataTable<ComponentReference> {
+public class ApplicationsList extends AbstractDataTable<Application> {
 
-    private static final ProvidesKey<ComponentReference> KEY_PROVIDER = new ProvidesKey<ComponentReference>() {
-        @Override
-        public Object getKey(ComponentReference item) {
-            return item.getName();
-        }
-    };
-
-    ComponentReferencesList() {
-        super("References");
+    /**
+     * Create a new ApplicationsList.
+     */
+    public ApplicationsList() {
+        super("Applications");
     }
 
-    protected void createColumns(DefaultCellTable<ComponentReference> table,
-            ListDataProvider<ComponentReference> dataProvider) {
-        TextColumn<ComponentReference> nameColumn = new TextColumn<ComponentReference>() {
+    @Override
+    protected ProvidesKey<Application> createKeyProvider() {
+        return new ProvidesKey<Application>() {
             @Override
-            public String getValue(ComponentReference reference) {
-                return reference.localName();
+            public Object getKey(Application item) {
+                return item.getName();
+            }
+        };
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void createColumns(DefaultCellTable<Application> table, ListDataProvider<Application> dataProvider) {
+        final TextColumn<Application> nameColumn = new TextColumn<Application>() {
+            @Override
+            public String getValue(Application application) {
+                return application.localName();
             }
         };
         nameColumn.setSortable(true);
 
-        TextColumn<ComponentReference> interfaceColumn = new TextColumn<ComponentReference>() {
+        final TextColumn<Application> namespaceColumn = new TextColumn<Application>() {
             @Override
-            public String getValue(ComponentReference reference) {
-                return reference.getInterface();
+            public String getValue(Application application) {
+                return application.namespace();
             }
         };
-        interfaceColumn.setSortable(true);
+        namespaceColumn.setSortable(true);
 
-        ColumnSortEvent.ListHandler<ComponentReference> sortHandler = new ColumnSortEvent.ListHandler<ComponentReference>(
+        ColumnSortEvent.ListHandler<Application> sortHandler = new ColumnSortEvent.ListHandler<Application>(
                 dataProvider.getList());
         sortHandler.setComparator(nameColumn, createColumnCommparator(nameColumn));
-        sortHandler.setComparator(interfaceColumn, createColumnCommparator(interfaceColumn));
+        sortHandler.setComparator(namespaceColumn, createColumnCommparator(namespaceColumn));
 
         table.addColumn(nameColumn, "Name");
-        table.addColumn(interfaceColumn, "Interface");
+        table.addColumn(namespaceColumn, "Target Namespace");
+        table.addColumnSortHandler(sortHandler);
 
         table.addColumnSortHandler(sortHandler);
+        table.getColumnSortList().push(namespaceColumn);
         table.getColumnSortList().push(nameColumn);
-    }
-
-    @Override
-    protected ProvidesKey<ComponentReference> createKeyProvider() {
-        return KEY_PROVIDER;
     }
 
 }

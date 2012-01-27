@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -18,55 +18,43 @@
  */
 package org.switchyard.console.client.model;
 
-import java.util.List;
+import org.switchyard.console.client.NameTokens;
+
+import com.google.gwt.autobean.shared.AutoBean;
 
 /**
- * Service
+ * QNameCategory
  * 
- * Represents a SwitchYard service.
+ * Provides implementations for the non-property methods in HasQName.
  * 
  * @author Rob Cernich
  */
-public interface Service extends HasQName {
+public final class QNameCategory {
+
+    private QNameCategory() {
+    }
 
     /**
-     * @return the interface name
+     * @param instance the bean instance.
+     * @return the "local" part of the bean's name.
      */
-    public String getInterface();
+    public static String localName(AutoBean<? extends HasQName> instance) {
+        String name = instance.as().getName();
+        if (name == null) {
+            return null;
+        }
+        return NameTokens.parseQName(name)[1];
+    }
 
     /**
-     * @param interfaceName the interface name
+     * @param instance the bean instance.
+     * @return the "namespace" part of the bean's name.
      */
-    public void setInterface(String interfaceName);
-
-    /**
-     * @return the promoted service's name
-     */
-    public String getPromotedService();
-
-    /**
-     * @param promotedService the promoted service's name
-     */
-    public void setPromotedService(String promotedService);
-
-    /**
-     * @return the gateways
-     */
-    List<Binding> getGateways();
-
-    /**
-     * @param gateways the gateways
-     */
-    public void setGateways(List<Binding> gateways);
-
-    /**
-     * @return the application name
-     */
-    public String getApplication();
-
-    /**
-     * @param application the application name
-     */
-    public void setApplication(String application);
-
+    public static String namespace(AutoBean<? extends HasQName> instance) {
+        String name = instance.as().getName();
+        if (name == null) {
+            return null;
+        }
+        return NameTokens.parseQName(name)[0];
+    }
 }
