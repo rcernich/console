@@ -29,8 +29,10 @@
   <description>SwitchYard Management Console</description>
 
   <modules>
+    <module>as7-core</module>
     <module>component</module>
     <module>gwt</module>
+    <module>app</module>
   </modules>
 
   <dependencyManagement>

@@ -16,27 +16,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.gin;
+package org.switchyard.console.application.client;
 
 import org.jboss.as.console.client.core.gin.CoreUI;
-import org.jboss.as.console.client.core.gin.GinjectorSingleton;
-
-import com.google.gwt.core.client.GWT;
+import org.switchyard.console.client.gin.SwitchYardGinjector;
 
 /**
- * AggregatedConsoleSingleton
+ * AggregatedConsoleGinjector
  * 
- * GinjectorSingleton that serves up the "aggregated" Ginjector.
+ * Ginjector interface which collects the core AS console and SwitchYard
+ * specific Ginjectors.
  * 
  * @author Rob Cernich
  */
-public class AggregatedConsoleSingleton implements GinjectorSingleton {
-
-    private static final CoreUI INSTANCE = GWT.create(AggregatedConsoleGinjector.class);
-
-    @Override
-    public CoreUI getCoreUI() {
-        return INSTANCE;
-    }
+public interface AggregatedConsoleGinjector extends CoreUI, SwitchYardGinjector {
 
 }

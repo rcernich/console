@@ -63,14 +63,23 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <directory>${project.build.sourceDirectory}</directory>
-      </resource>
-    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <logLevel>TRACE</logLevel>
+          <extraJvmArgs>-Xmx512m</extraJvmArgs>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

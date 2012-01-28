@@ -17,12 +17,24 @@
   ~ MA  02110-1301, USA.
   -->
 
-<module rename-to="SwitchYard">
+<module rename-to="app">
 
   <inherits name="org.jboss.as.console.App" />
-  <inherits name="org.switchyard.console.Extensions" />
+  <inherits name="org.switchyard.console.SwitchYard" />
 
-  <!-- Specify the paths for translatable code -->
+  <set-configuration-property name="gin.ginjector"
+    value="org.switchyard.console.application.client.AggregatedConsoleGinjector" />
+
+  <replace-with class="org.switchyard.console.application.client.AggregatedConsoleSingleton">
+    <when-type-is class="org.jboss.as.console.client.core.gin.GinjectorSingleton" />
+  </replace-with>
+
+  <!-- XXX: remove once this is in the core console module. -->
+  <generate-with class="org.jboss.as.console.rebind.extensions.SubsystemExtensionProcessorGenerator">
+    <when-type-assignable class="org.jboss.as.console.client.shared.SubsystemExtensionProcessor" />
+  </generate-with>
+
+	<!-- Specify the paths for translatable code -->
   <source path='client' />
   <source path='shared' />
 
