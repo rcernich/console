@@ -23,10 +23,11 @@
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
+  <groupId>org.switchyard.console</groupId>
   <artifactId>switchyard-console-parent</artifactId>
   <packaging>pom</packaging>
-  <name>SwitchYard: Console</name>
-  <description>SwitchYard Management Console</description>
+  <name>SwitchYard: Console Parent</name>
+  <description>SwitchYard Management Console parent project.</description>
 
   <modules>
     <module>as7-core</module>

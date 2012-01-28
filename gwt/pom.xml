@@ -5,7 +5,7 @@
   <!-- POM file generated with GWT webAppCreator -->
   <parent>
     <artifactId>switchyard-console-parent</artifactId>
-    <groupId>org.switchyard</groupId>
+    <groupId>org.switchyard.console</groupId>
     <version>0.4.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -16,55 +16,55 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-core</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-bean</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-bpel</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-bpm</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-camel</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-clojure</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-hornetq</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-rules</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-component-soap</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -77,7 +77,7 @@
 
     <!-- XXX: replace with proper AS dependency once console includes extension support. -->
     <dependency>
-      <groupId>org.switchyard</groupId>
+      <groupId>org.switchyard.console</groupId>
       <artifactId>switchyard-console-as7-core</artifactId>
       <scope>provided</scope>
     </dependency>
