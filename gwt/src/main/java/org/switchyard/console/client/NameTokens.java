@@ -31,6 +31,9 @@ public final class NameTokens {
     private NameTokens() {
     }
 
+    /** The SwitchYard subsystem name. */
+    public static final String SUBSYSTEM = "switchyard";
+
     /** The subpath for the SwitchYard system configuration view. */
     public static final String SYSTEM_CONFIG_PRESENTER = "switchyard";
     /** The subpath for the SwitchYard applications view. */
@@ -39,8 +42,12 @@ public final class NameTokens {
     public static final String ARTIFACTS_PRESENTER = "sy-artifacts";
     /** The subpath for the SwitchYard services view. */
     public static final String SERVICES_PRESENTER = "sy-services";
+    /** The subpath for the SwitchYard message metrics view. */
+    public static final String METRICS_PRESENTER = "sy-metrics";
     /** The subpath for the SwitchYard runtime view. */
-    public static final String RUNTIME_PRESENTER = "sy-runtime";
+    public static final String RUNTIME_PRESENTER = "switchyard-runtime";
+    /** The subpath for the SwitchYard runtime operations view. */
+    public static final String RUNTIME_OPERATIONS_PRESENTER = APPLICATIONS_PRESENTER;
 
     /** The parameter name used for component name. */
     public static final String COMPONENT_NAME_PARAM = "component";

@@ -25,12 +25,12 @@ import org.switchyard.console.components.client.ui.ComponentConfigurationPresent
 
 /**
  * BPELComponentProvider
- * 
+ * <p/>
  * ComponentProvider for the BPEL component.
- * 
+ *
  * @author Rob Cernich
  */
-@ComponentExtension(displayName = "BPEL", componentName = "BPELComponent", activationTypes = "bpel")
+@ComponentExtension(displayName = "BPEL", componentName = "org.switchyard.component.bpel", activationTypes = "bpel")
 public class BPELComponentProvider extends BaseComponentProvider {
 
     @Override

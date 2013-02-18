@@ -1,6 +1,6 @@
 /* 
  * JBoss, Home of Professional Open Source 
- * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @author tags. All rights reserved. 
  * See the copyright.txt in the distribution for a 
  * full listing of individual contributors.
@@ -16,36 +16,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.jboss.as.console.client.core.gin;
+package org.switchyard.console.client.model;
 
 /**
- * GinjectorSingleton
+ * Validator
  * 
- * <p/>
- * Simple API which uses deferred binding to initialize the application
- * Ginjector. This can be implemented by console aggregators to provide an
- * extended CoreUI Ginjector (i.e. a Ginjector that includes extended
- * presentation bindings in addition to CoreUI).
- * 
- * <p/>
- * For example:
- * 
- * <pre>
- * <code>
- * private static final CoreUI instance = GWT.create(CoreUI.class);
- * 
- * public CoreUI getCoreUI() {
- *    return instance;
- * }
- * </code>
- * </pre>
+ * Represents a SwitchYard validator.
  * 
  * @author Rob Cernich
  */
-public interface GinjectorSingleton {
+public interface Validator {
+    /**
+     * @return the type name.
+     */
+    public String getName();
 
     /**
-     * @return the CoreUI Ginjector.
+     * @param name the type name.
      */
-    CoreUI getCoreUI();
+    public void setName(String name);
+
+    /**
+     * @return the implementation type.
+     */
+    public String getType();
+
+    /**
+     * @param type the implementation type.
+     */
+    public void setType(String type);
+
 }

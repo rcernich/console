@@ -16,13 +16,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.client.ui.runtime;
+package org.switchyard.console.client.ui.metrics;
 
 import org.jboss.ballroom.client.widgets.tables.DefaultCellTable;
+import org.switchyard.console.client.model.MessageMetrics;
 import org.switchyard.console.client.model.ServiceMetrics;
 import org.switchyard.console.client.ui.common.AbstractDataTable;
 import org.switchyard.console.client.ui.common.PercentageBarCell;
 
+import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -37,7 +39,7 @@ import com.google.gwt.view.client.ProvidesKey;
  * 
  * @author Rob Cernich
  */
-public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetrics> {
+public class ServiceMetricsList extends AbstractDataTable<ServiceMetrics> {
 
     private static final ProvidesKey<ServiceMetrics> KEY_PROVIDER = new ProvidesKey<ServiceMetrics>() {
         @Override
@@ -46,13 +48,13 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
         }
     };
 
-    private ServiceMetrics _serviceMetrics;
+    private MessageMetrics _systemMetrics;
 
     /**
      * Create a new ServiceReferenceMetricsList.
      */
-    public ServiceReferenceMetricsList() {
-        super("Referenced Service Metrics");
+    public ServiceMetricsList() {
+        super("Service Metrics");
     }
 
     @Override
@@ -65,18 +67,26 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
         };
         nameColumn.setSortable(true);
 
-        final TextColumn<ServiceMetrics> countColumn = new TextColumn<ServiceMetrics>() {
+        final TextColumn<ServiceMetrics> namespaceColumn = new TextColumn<ServiceMetrics>() {
             @Override
-            public String getValue(ServiceMetrics metrics) {
-                return "" + metrics.getTotalCount();
+            public String getValue(ServiceMetrics service) {
+                return service.namespace();
+            }
+        };
+        namespaceColumn.setSortable(true);
+
+        final Column<ServiceMetrics, Number> countColumn = new Column<ServiceMetrics, Number>(new NumberCell()) {
+            @Override
+            public Number getValue(ServiceMetrics metrics) {
+                return metrics.getTotalCount();
             }
         };
         countColumn.setSortable(true);
 
-        final TextColumn<ServiceMetrics> averageTimeColumn = new TextColumn<ServiceMetrics>() {
+        final Column<ServiceMetrics, Number> averageTimeColumn = new Column<ServiceMetrics, Number>(new NumberCell()) {
             @Override
-            public String getValue(ServiceMetrics metrics) {
-                return "" + metrics.getAverageProcessingTime();
+            public Number getValue(ServiceMetrics metrics) {
+                return metrics.getAverageProcessingTime();
             }
         };
         averageTimeColumn.setSortable(true);
@@ -85,10 +95,10 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
                 new PercentageBarCell()) {
             @Override
             public Double getValue(ServiceMetrics metrics) {
-                if (_serviceMetrics == null || _serviceMetrics.getTotalProcessingTime() == 0) {
+                if (_systemMetrics == null || _systemMetrics.getTotalProcessingTime() == 0) {
                     return 0.0;
                 }
-                return metrics.getTotalProcessingTime() / (double) _serviceMetrics.getTotalProcessingTime();
+                return metrics.getTotalProcessingTime() / (double) _systemMetrics.getTotalProcessingTime();
             }
         };
         totalTimePercentageColumn.setSortable(true);
@@ -97,10 +107,10 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
                 new PercentageBarCell()) {
             @Override
             public Double getValue(ServiceMetrics metrics) {
-                if (metrics.getTotalCount() == 0) {
+                if (_systemMetrics == null || _systemMetrics.getFaultCount() == 0) {
                     return 0.0;
                 }
-                return metrics.getFaultCount() / (double) metrics.getTotalCount();
+                return metrics.getFaultCount() / (double) _systemMetrics.getFaultCount();
             }
         };
         faultPercentageColumn.setSortable(true);
@@ -108,8 +118,14 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
         ColumnSortEvent.ListHandler<ServiceMetrics> sortHandler = new ColumnSortEvent.ListHandler<ServiceMetrics>(
                 dataProvider.getList());
         sortHandler.setComparator(nameColumn, createColumnCommparator(nameColumn));
+        sortHandler.setComparator(namespaceColumn, createColumnCommparator(namespaceColumn));
+        sortHandler.setComparator(countColumn, createNumberColumnCommparator(countColumn));
+        sortHandler.setComparator(averageTimeColumn, createNumberColumnCommparator(averageTimeColumn));
+        sortHandler.setComparator(totalTimePercentageColumn, createNumberColumnCommparator(totalTimePercentageColumn));
+        sortHandler.setComparator(faultPercentageColumn, createNumberColumnCommparator(faultPercentageColumn));
 
         table.addColumn(nameColumn, "Name");
+        table.addColumn(namespaceColumn, "Target Namespace");
         table.addColumn(countColumn, "Message Count");
         table.addColumn(averageTimeColumn, "Average Time");
         table.addColumn(totalTimePercentageColumn, "Time %");
@@ -118,22 +134,19 @@ public class ServiceReferenceMetricsList extends AbstractDataTable<ServiceMetric
         table.addColumnSortHandler(sortHandler);
         table.getColumnSortList().push(averageTimeColumn);
         table.getColumnSortList().push(countColumn);
-        table.getColumnSortList().push(totalTimePercentageColumn);
         table.getColumnSortList().push(faultPercentageColumn);
+        table.getColumnSortList().push(namespaceColumn);
         table.getColumnSortList().push(nameColumn);
+        // insert twice for descending
+        table.getColumnSortList().push(totalTimePercentageColumn);
+        table.getColumnSortList().push(totalTimePercentageColumn);
     }
 
     /**
-     * @param serviceMetrics the parent service's metrics, containing a list of
-     *            reference metrics.
+     * @param systemMetrics the system metrics.
      */
-    public void setServiceMetrics(ServiceMetrics serviceMetrics) {
-        _serviceMetrics = serviceMetrics;
-        if (serviceMetrics == null) {
-            setData(null);
-        } else {
-            setData(serviceMetrics.getReferences());
-        }
+    public void setSystemMetrics(MessageMetrics systemMetrics) {
+        _systemMetrics = systemMetrics;
     }
 
     @Override

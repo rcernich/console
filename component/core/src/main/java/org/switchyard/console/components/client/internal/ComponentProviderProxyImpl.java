@@ -23,17 +23,16 @@ import org.switchyard.console.components.client.internal.ComponentExtensionManag
 import org.switchyard.console.components.client.ui.ComponentConfigurationPresenter;
 import org.switchyard.console.components.client.ui.ComponentConfigurationPresenter.ComponentConfigurationView;
 
-import com.google.gwt.event.shared.EventBus;
+import com.google.web.bindery.event.shared.EventBus;
 
 /**
  * ComponentProviderProxyImpl
- * 
+ * <p/>
  * Wraps a ComponentProvider annotated with a ComponentExtension.
- * 
+ *
+ * @author Rob Cernich
  * @see ComponentExtension
  * @see ComponentExtensionManager
- * 
- * @author Rob Cernich
  */
 public abstract class ComponentProviderProxyImpl implements ComponentProviderProxy {
 
@@ -42,7 +41,7 @@ public abstract class ComponentProviderProxyImpl implements ComponentProviderPro
 
     /**
      * Create a new ComponentProviderProxyImpl.
-     * 
+     *
      * @param displayName the displayName specified in the annotation.
      */
     protected ComponentProviderProxyImpl(String displayName) {
@@ -58,7 +57,7 @@ public abstract class ComponentProviderProxyImpl implements ComponentProviderPro
 
     @Override
     public ComponentConfigurationPresenter createConfigurationPresenter(EventBus eventBus,
-            ComponentConfigurationView view) {
+                                                                        ComponentConfigurationView view) {
         return getDelegate().createConfigurationPresenter(eventBus, view);
     }
 
