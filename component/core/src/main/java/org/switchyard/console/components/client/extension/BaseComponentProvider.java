@@ -23,13 +23,13 @@ import org.switchyard.console.components.client.ui.BaseComponentConfigurationVie
 import org.switchyard.console.components.client.ui.ComponentConfigurationPresenter;
 import org.switchyard.console.components.client.ui.ComponentConfigurationPresenter.ComponentConfigurationView;
 
-import com.google.gwt.event.shared.EventBus;
+import com.google.web.bindery.event.shared.EventBus;
 
 /**
  * BaseComponentProvider
- * 
+ * <p/>
  * A base implementation which ComponentExtension implementers may extend.
- * 
+ *
  * @author Rob Cernich
  */
 public class BaseComponentProvider implements DefaultComponentProvider {
@@ -42,7 +42,7 @@ public class BaseComponentProvider implements DefaultComponentProvider {
 
     @Override
     public ComponentConfigurationPresenter createConfigurationPresenter(EventBus eventBus,
-            ComponentConfigurationView view) {
+                                                                        ComponentConfigurationView view) {
         return new BaseComponentConfigurationPresenter(eventBus, view);
     }
 

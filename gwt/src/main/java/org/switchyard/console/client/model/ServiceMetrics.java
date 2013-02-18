@@ -31,6 +31,16 @@ import java.util.List;
 public interface ServiceMetrics extends MessageMetrics, HasQName {
 
     /**
+     * @return metrics for operations
+     */
+    List<OperationMetrics> getOperations();
+
+    /**
+     * @param value metrics for operations
+     */
+    void setOperations(List<OperationMetrics> value);
+
+    /**
      * @return metrics for referenced services
      */
     List<ServiceMetrics> getReferences();

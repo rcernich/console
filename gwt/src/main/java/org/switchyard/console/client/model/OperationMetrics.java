@@ -16,19 +16,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA  02110-1301, USA.
  */
-package org.switchyard.console.application.client;
-
-import org.jboss.as.console.client.core.gin.CoreUI;
-import org.switchyard.console.client.gin.SwitchYardGinjector;
+package org.switchyard.console.client.model;
 
 /**
- * AggregatedConsoleGinjector
+ * OperationMetrics
  * 
- * Ginjector interface which collects the core AS console and SwitchYard
- * specific Ginjectors.
- * 
- * @author Rob Cernich
+ * <p/>
+ * Message metrics specific to an operation.
  */
-public interface AggregatedConsoleGinjector extends CoreUI, SwitchYardGinjector {
+public interface OperationMetrics extends MessageMetrics {
+
+    /**
+     * @return operation name
+     */
+    String getName();
+
+    /**
+     * @param value operation name
+     */
+    void setName(String value);
 
 }

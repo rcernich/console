@@ -18,22 +18,22 @@
  */
 package org.switchyard.console.components.client.ui;
 
-import com.google.gwt.event.shared.EventBus;
+import com.google.web.bindery.event.shared.EventBus;
 
 /**
  * BaseComponentConfigurationPresenter
- * 
+ * <p/>
  * A base implementation for ComponentConfigurationPresenter.
- * 
+ *
  * @author Rob Cernich
  */
 public class BaseComponentConfigurationPresenter extends ComponentConfigurationPresenter {
 
     /**
      * Create a new BaseComponentConfigurationPresenter.
-     * 
+     *
      * @param eventBus the EventBus.
-     * @param view the view.
+     * @param view     the view.
      */
     public BaseComponentConfigurationPresenter(EventBus eventBus, ComponentConfigurationView view) {
         super(eventBus, view);
