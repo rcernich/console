@@ -18,42 +18,43 @@
  */
 package org.switchyard.console.client.model;
 
+import java.util.List;
+
 /**
- * Binding
+ * Reference
  * 
- * Represents a gateway binding on a service.
- * 
- * @author Rob Cernich
+ * Represents a SwitchYard reference.
  */
-public interface Binding {
-    
-    /**
-     * @return the type of binding (e.g. soap)
-     */
-    public String getType();
-    
-    /**
-     * @param type the type of binding (e.g. soap)
-     */
-    public void setType(String type);
-    
-    /**
-     * @return the raw configuration of the binding
-     */
-    public String getConfiguration();
-    
-    /**
-     * @param configuration the raw configuration of the binding.
-     */
-    public void setConfiguration(String configuration);
-    
-    /**
-     * @return true if this binding is up and running.
-     */
-    public Boolean getIsRunning();
+public interface Reference extends HasQName {
 
     /**
-     * @param isRunning true if this binding is up and running.
+     * @return the interface name
      */
-    public void setIsRunning(Boolean isRunning);
+    public String getInterface();
+
+    /**
+     * @param interfaceName the interface name
+     */
+    public void setInterface(String interfaceName);
+
+    /**
+     * @return the gateways
+     */
+    List<Binding> getGateways();
+
+    /**
+     * @param gateways the gateways
+     */
+    public void setGateways(List<Binding> gateways);
+
+    /**
+     * @return the application name
+     */
+    public String getApplication();
+
+    /**
+     * @param application the application name
+     */
+    public void setApplication(String application);
+
 }

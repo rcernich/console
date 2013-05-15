@@ -27,6 +27,7 @@ import org.jboss.ballroom.client.layout.LHSHighlightEvent;
 import org.switchyard.console.client.NameTokens;
 import org.switchyard.console.client.model.Application;
 import org.switchyard.console.client.model.ArtifactReference;
+import org.switchyard.console.client.model.Reference;
 import org.switchyard.console.client.model.Service;
 import org.switchyard.console.client.model.SwitchYardStore;
 import org.switchyard.console.client.ui.runtime.RuntimePresenter;
@@ -62,7 +63,7 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
      */
     @ProxyCodeSplit
     @NameToken(NameTokens.APPLICATIONS_PRESENTER)
-    @TabInfo(container = RuntimePresenter.class, label = "Applications", priority = 1)
+    @TabInfo(container = RuntimePresenter.class, label = NameTokens.APPLICATIONS_TEXT, priority = 1)
     public interface MyProxy extends TabContentProxyPlace<ApplicationPresenter> {
     }
 
@@ -157,6 +158,24 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
         _placeManager.revealRelativePlace(
                 new PlaceRequest(NameTokens.SERVICES_PRESENTER).with(NameTokens.SERVICE_NAME_PARAM,
                         URL.encode(service.getName())).with(NameTokens.APPLICATION_NAME_PARAM,
+                        URL.encode(application.getName())), -1);
+    }
+
+    /**
+     * Notifies the presenter that the user wishes to view details about a
+     * specific reference.
+     * 
+     * @param reference the reference.
+     * @param application the application containing the reference.
+     */
+    public void onNavigateToReference(Reference reference, Application application) {
+        if (reference == null || application == null) {
+            Console.error("Cannot reveal reference details.  No reference or application specified.");
+            return;
+        }
+        _placeManager.revealRelativePlace(
+                new PlaceRequest(NameTokens.REFERENCES_PRESENTER).with(NameTokens.REFERENCE_NAME_PARAM,
+                        URL.encode(reference.getName())).with(NameTokens.APPLICATION_NAME_PARAM,
                         URL.encode(application.getName())), -1);
     }
 

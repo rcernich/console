@@ -49,6 +49,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
 
     private Form<Application> _applicationDetailsForm;
     private ApplicationServicesEditor _servicesEditor;
+    private ApplicationReferencesList _referencesEditor;
     private ArtifactReferencesList _artifactReferencesList;
     private ApplicationTransformationsEditor _transformationsEditor;
     private ApplicationsList _applicationsList;
@@ -79,6 +80,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
         formWidget.getElement().setAttribute("style", "margin:15px");
 
         _servicesEditor = new ApplicationServicesEditor(_presenter);
+        _referencesEditor = new ApplicationReferencesList(_presenter);
         _artifactReferencesList = new ArtifactReferencesList();
         _transformationsEditor = new ApplicationTransformationsEditor(_presenter);
         _validatorsList = new ValidatorsList();
@@ -98,7 +100,8 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
                 .setDescription(
                         "Displays details for a specific application.  Select an application to see its implementation details.")
                 .setMaster(null, formWidget).addDetail("Services", _servicesEditor.asWidget())
-                .addDetail("Artifact References", _artifactReferencesList.asWidget())
+                .addDetail("References", _referencesEditor.asWidget())
+                .addDetail("Artifacts", _artifactReferencesList.asWidget())
                 .addDetail("Transformers", _transformationsEditor.asWidget())
                 .addDetail("Validators", _validatorsList.asWidget());
         applicationDetailsLayout.build();
@@ -133,6 +136,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
         _applicationsList.setSelection(application);
         _artifactReferencesList.setData(application == null ? null : application.getArtifacts());
         _servicesEditor.setApplication(application);
+        _referencesEditor.setApplication(application);
         _transformationsEditor.setApplication(application);
         _validatorsList.setData(application == null ? null : application.getValidators());
     }

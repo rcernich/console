@@ -40,6 +40,16 @@ public interface Application extends HasQName {
     public void setServices(List<Service> services);
 
     /**
+     * @return the references used by this application.
+     */
+    public List<Reference> getReferences();
+
+    /**
+     * @param references the references used by this application.
+     */
+    public void setReferences(List<Reference> references);
+
+    /**
      * @return the component services defined within this application.
      */
     public List<ComponentService> getComponentServices();

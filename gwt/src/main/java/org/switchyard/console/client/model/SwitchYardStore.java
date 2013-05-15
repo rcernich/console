@@ -123,4 +123,21 @@ public interface SwitchYardStore {
      */
     void loadArtifactReferences(AsyncCallback<List<ArtifactReference>> asyncCallback);
 
+    /**
+     * Load details for a specific reference.
+     * 
+     * @param referenceName the name of the reference to load.
+     * @param applicationName the name of the application containing the
+     *            reference.
+     * @param callback the callback.
+     */
+    void loadReference(String referenceName, String applicationName, AsyncCallback<Reference> callback);
+
+    /**
+     * Load references deployed on the SwitchYard subsystem.
+     * 
+     * @param callback the callback.
+     */
+    void loadReferences(AsyncCallback<List<Reference>> callback);
+
 }

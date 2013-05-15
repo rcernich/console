@@ -23,6 +23,7 @@ import org.jboss.ballroom.client.widgets.window.DefaultWindow;
 import org.switchyard.console.client.model.Binding;
 import org.switchyard.console.client.ui.common.AbstractDataTable;
 
+import com.google.gwt.cell.client.ButtonCell;
 import com.google.gwt.cell.client.ClickableTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.user.cellview.client.Column;
@@ -43,7 +44,10 @@ public class GatewaysList extends AbstractDataTable<Binding> {
     private DefaultWindow _bindingDetailsWindow;
     private BindingDetailsWidget _bindingDetailsWidget;
 
-    GatewaysList() {
+    /**
+     * Create a new GatewaysList.
+     */
+    public GatewaysList() {
         super("Gateways");
     }
 
@@ -71,12 +75,34 @@ public class GatewaysList extends AbstractDataTable<Binding> {
         });
         configColumn.setSortable(false);
 
+        Column<Binding, String> statusColumn = new TextColumn<Binding>() {
+            @Override
+            public String getValue(Binding dummy) {
+                return dummy.getIsRunning() == null ? "Unknown" : dummy.getIsRunning() ? "Running" : "Stopped";
+            }
+        };
+
+        Column<Binding, String> startStopColumn = new Column<Binding, String>(new ButtonCell()) {
+            @Override
+            public String getValue(Binding dummy) {
+                return dummy.getIsRunning() == null || !dummy.getIsRunning() ? "Start" : "Stop";
+            }
+        };
+        startStopColumn.setFieldUpdater(new FieldUpdater<Binding, String>() {
+            @Override
+            public void update(int index, Binding binding, String value) {
+                changeState(binding);
+            }
+        });
+
         ColumnSortEvent.ListHandler<Binding> sortHandler = new ColumnSortEvent.ListHandler<Binding>(
                 dataProvider.getList());
         sortHandler.setComparator(typeColumn, createColumnCommparator(typeColumn));
 
         table.addColumn(typeColumn, "Type");
         table.addColumn(configColumn, "Configuration");
+        table.addColumn(statusColumn, "Status");
+        table.addColumn(startStopColumn, "Start/Stop");
 
         table.addColumnSortHandler(sortHandler);
 
@@ -108,5 +134,9 @@ public class GatewaysList extends AbstractDataTable<Binding> {
 
         _bindingDetailsWidget = new BindingDetailsWidget();
         _bindingDetailsWindow.setWidget(_bindingDetailsWidget.asWidget());
+    }
+
+    private void changeState(Binding binding) {
+        // TODO: send message to server...
     }
 }
