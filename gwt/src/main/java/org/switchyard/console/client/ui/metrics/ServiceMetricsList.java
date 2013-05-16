@@ -52,9 +52,11 @@ public class ServiceMetricsList extends AbstractDataTable<ServiceMetrics> {
 
     /**
      * Create a new ServiceReferenceMetricsList.
+     * 
+     * @param title for the list
      */
-    public ServiceMetricsList() {
-        super("Service Metrics");
+    public ServiceMetricsList(String title) {
+        super(title);
     }
 
     @Override

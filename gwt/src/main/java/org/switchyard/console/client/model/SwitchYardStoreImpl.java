@@ -27,6 +27,7 @@ import static org.jboss.dmr.client.ModelDescriptionConstants.READ_RESOURCE_OPERA
 import static org.jboss.dmr.client.ModelDescriptionConstants.RECURSIVE;
 import static org.jboss.dmr.client.ModelDescriptionConstants.RESULT;
 import static org.jboss.dmr.client.ModelDescriptionConstants.SUBSYSTEM;
+import static org.jboss.dmr.client.ModelDescriptionConstants.TYPE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -384,7 +385,7 @@ public class SwitchYardStoreImpl implements SwitchYardStore {
 
     @Override
     public void loadAllServiceMetrics(final AsyncCallback<List<ServiceMetrics>> callback) {
-        // /subsystem=switchyard:show-metrics(service-name=*)
+        // /subsystem=switchyard:show-metrics(service-name=*, type=service)
 
         final ModelNode operation = new ModelNode();
         final ModelNode address = RuntimeBaseAddress.get();
@@ -392,6 +393,7 @@ public class SwitchYardStoreImpl implements SwitchYardStore {
         address.add(SUBSYSTEM, SWITCHYARD);
         operation.get(OP_ADDR).set(address);
         operation.get(SERVICE_NAME).set("*");
+        operation.get(TYPE).set("service");
 
         _dispatcher.execute(new DMRAction(operation), new AsyncCallback<DMRResponse>() {
 
@@ -411,6 +413,40 @@ public class SwitchYardStoreImpl implements SwitchYardStore {
                     }
                 }
                 callback.onFailure(new Exception("Could not load all service metrics."));
+            }
+        });
+    }
+
+    @Override
+    public void loadAllReferenceMetrics(final AsyncCallback<List<ServiceMetrics>> callback) {
+        // /subsystem=switchyard:show-metrics(service-name=*, type=reference)
+
+        final ModelNode operation = new ModelNode();
+        final ModelNode address = RuntimeBaseAddress.get();
+        operation.get(OP).set(SHOW_METRICS);
+        address.add(SUBSYSTEM, SWITCHYARD);
+        operation.get(OP_ADDR).set(address);
+        operation.get(SERVICE_NAME).set("*");
+        operation.get(TYPE).set("reference");
+
+        _dispatcher.execute(new DMRAction(operation), new AsyncCallback<DMRResponse>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DMRResponse result) {
+                final ModelNode response = result.get();
+                if (response.hasDefined(RESULT)) {
+                    final List<ServiceMetrics> metrics = createServiceMetrics(response.get(RESULT));
+                    if (metrics != null) {
+                        callback.onSuccess(metrics);
+                        return;
+                    }
+                }
+                callback.onFailure(new Exception("Could not load all reference metrics."));
             }
         });
     }

@@ -21,8 +21,8 @@ package org.switchyard.console.client.ui.metrics;
 import java.util.List;
 
 import org.jboss.as.console.client.core.DisposableViewImpl;
-import org.jboss.as.console.client.shared.viewframework.builder.OneToOneLayout;
 import org.jboss.as.console.client.shared.viewframework.builder.SimpleLayout;
+import org.jboss.ballroom.client.widgets.window.DefaultWindow;
 import org.switchyard.console.client.model.MessageMetrics;
 import org.switchyard.console.client.model.ServiceMetrics;
 import org.switchyard.console.client.ui.metrics.MetricsPresenter.MyView;
@@ -42,57 +42,54 @@ import com.google.gwt.view.client.SelectionChangeEvent.Handler;
  */
 public class MetricsView extends DisposableViewImpl implements MyView {
 
-    private MetricsPresenter _presenter;
     private MessageMetricsViewer _systemMetricsViewer;
     private ServiceMetricsList _servicesList;
-    private MessageMetricsViewer _serviceMetricsViewer;
-    private ServiceReferenceMetricsList _serviceReferenceMetricsList;
-    private ServiceOperationMetricsList _serviceOperationMetricsList;
+    private ServiceMetricsList _referencesList;
+    private MessageMetricsViewer _referenceMetricsViewer;
+    private ServiceOperationMetricsList _referenceOperationMetricsList;
     private MessageMetrics _systemMetrics;
-    private ServiceMetrics _selectedService;
+    private DefaultWindow _serviceDetailsWindow;
+    private ServiceDetailsWidget _serviceDetailsWidget;
+    private DefaultWindow _referenceDetailsWindow;
+    private ReferenceDetailsWidget _referenceDetailsWidget;
 
     @Override
     public Widget createWidget() {
+        createServiceDetailsWindow();
+        createReferenceDetailsWindow();
+
         _systemMetricsViewer = new MessageMetricsViewer(false);
-        _servicesList = new ServiceMetricsList();
-        _serviceMetricsViewer = new MessageMetricsViewer(true);
-        _serviceReferenceMetricsList = new ServiceReferenceMetricsList();
-        _serviceOperationMetricsList = new ServiceOperationMetricsList();
+        _servicesList = new ServiceMetricsList("Service Metrics");
+        _referencesList = new ServiceMetricsList("Reference Metrics");
+        _referenceMetricsViewer = new MessageMetricsViewer(true);
+        _referenceOperationMetricsList = new ServiceOperationMetricsList();
 
         _servicesList.addSelectionChangeHandler(new Handler() {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
-                // prevent infinite recursion
-                if (_servicesList.getSelection() != _selectedService) {
-                    _presenter.onServiceSelected(_servicesList.getSelection());
-                }
+                showServiceDetails(_servicesList.getSelection());
             }
         });
 
-        Widget servicesWidget = _servicesList.asWidget();
-        OneToOneLayout serviceMetricsLayout = new OneToOneLayout()
-                .setPlain(true)
-                .setHeadline("Services")
-                .setDescription(
-                        "Displays message metrics for individual services.  Select a service to see message metrics for a specific service.")
-                .setMaster(null, servicesWidget).addDetail("Service Metrics", _serviceMetricsViewer.asWidget())
-                .addDetail("Operation Metrics", _serviceOperationMetricsList.asWidget())
-                .addDetail("Reference Metrics", _serviceReferenceMetricsList.asWidget());
-        serviceMetricsLayout.build();
-        servicesWidget = servicesWidget.getParent();
-        servicesWidget.setStyleName("fill-layout-width");
+        _referencesList.addSelectionChangeHandler(new Handler() {
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                showReferenceDetails(_referencesList.getSelection());
+            }
+        });
 
         SimpleLayout layout = new SimpleLayout().setTitle("SwitchYard Message Metrics").setHeadline("System")
                 .setDescription("Displays message metrics for the SwitchYard subsystem.")
                 .addContent("System Message Metrics", _systemMetricsViewer.asWidget())
-                .addContent("spacer", new HTMLPanel("&nbsp;")).addContent("Service Message Metrics", servicesWidget);
+                .addContent("spacer", new HTMLPanel("&nbsp;"))
+                .addContent("Service Message Metrics", _servicesList.asWidget())
+                .addContent("Reference Message Metrics", _referencesList.asWidget());
 
         return layout.build();
     }
 
     @Override
     public void setPresenter(MetricsPresenter presenter) {
-        _presenter = presenter;
     }
 
     @Override
@@ -101,21 +98,24 @@ public class MetricsView extends DisposableViewImpl implements MyView {
     }
 
     @Override
-    public void setServiceMetrics(ServiceMetrics serviceMetrics) {
+    public void setReferences(List<ServiceMetrics> referenceMetrics) {
+        _referencesList.setData(referenceMetrics);
+    }
+
+    @Override
+    public void setReferenceMetrics(ServiceMetrics serviceMetrics) {
         if (serviceMetrics == null) {
-            _serviceMetricsViewer.clear();
-            _serviceReferenceMetricsList.setServiceMetrics(null);
-            _serviceOperationMetricsList.setServiceMetrics(null);
+            _referenceMetricsViewer.clear();
+            _referenceOperationMetricsList.setServiceMetrics(null);
             return;
         }
         if (_systemMetrics == null) {
-            _serviceMetricsViewer.setMessageMetrics(serviceMetrics);
+            _referenceMetricsViewer.setMessageMetrics(serviceMetrics);
         } else {
-            _serviceMetricsViewer.setMessageMetrics(serviceMetrics, _systemMetrics.getTotalCount(),
+            _referenceMetricsViewer.setMessageMetrics(serviceMetrics, _systemMetrics.getTotalCount(),
                     _systemMetrics.getTotalProcessingTime());
         }
-        _serviceReferenceMetricsList.setServiceMetrics(serviceMetrics);
-        _serviceOperationMetricsList.setServiceMetrics(serviceMetrics);
+        _referenceOperationMetricsList.setServiceMetrics(serviceMetrics);
     }
 
     @Override
@@ -127,18 +127,46 @@ public class MetricsView extends DisposableViewImpl implements MyView {
         }
         _systemMetricsViewer.setMessageMetrics(systemMetrics);
         _servicesList.setSystemMetrics(systemMetrics);
-    }
-
-    @Override
-    public void setService(ServiceMetrics service) {
-        _selectedService = service;
-        _servicesList.setSelection(service);
+        _referencesList.setSystemMetrics(systemMetrics);
     }
 
     @Override
     public void clearMetrics() {
         _systemMetricsViewer.clear();
-        _serviceMetricsViewer.clear();
+    }
+
+    private void showServiceDetails(ServiceMetrics metrics) {
+        _serviceDetailsWidget.setMetrics(metrics, _systemMetrics);
+        _serviceDetailsWindow.center();
+    }
+
+    private void createServiceDetailsWindow() {
+        _serviceDetailsWindow = new DefaultWindow("Service Metrics");
+        _serviceDetailsWindow.setGlassEnabled(true);
+        _serviceDetailsWindow.setAutoHideEnabled(true);
+        _serviceDetailsWindow.setAutoHideOnHistoryEventsEnabled(true);
+        _serviceDetailsWindow.setWidth(600);
+        _serviceDetailsWindow.setHeight(360);
+
+        _serviceDetailsWidget = new ServiceDetailsWidget();
+        _serviceDetailsWindow.setWidget(_serviceDetailsWidget.asWidget());
+    }
+
+    private void showReferenceDetails(ServiceMetrics metrics) {
+        _referenceDetailsWidget.setMetrics(metrics, _systemMetrics);
+        _referenceDetailsWindow.center();
+    }
+
+    private void createReferenceDetailsWindow() {
+        _referenceDetailsWindow = new DefaultWindow("Reference Metrics");
+        _referenceDetailsWindow.setGlassEnabled(true);
+        _referenceDetailsWindow.setAutoHideEnabled(true);
+        _referenceDetailsWindow.setAutoHideOnHistoryEventsEnabled(true);
+        _referenceDetailsWindow.setWidth(600);
+        _referenceDetailsWindow.setHeight(360);
+
+        _referenceDetailsWidget = new ReferenceDetailsWidget();
+        _referenceDetailsWindow.setWidget(_referenceDetailsWidget.asWidget());
     }
 
 }

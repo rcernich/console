@@ -33,7 +33,6 @@ import org.switchyard.console.client.model.ServiceMetrics;
 import org.switchyard.console.client.model.SwitchYardStore;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import com.google.web.bindery.event.shared.EventBus;
@@ -43,7 +42,6 @@ import com.gwtplatform.mvp.client.annotations.NameToken;
 import com.gwtplatform.mvp.client.annotations.ProxyCodeSplit;
 import com.gwtplatform.mvp.client.proxy.Place;
 import com.gwtplatform.mvp.client.proxy.PlaceManager;
-import com.gwtplatform.mvp.client.proxy.PlaceRequest;
 import com.gwtplatform.mvp.client.proxy.Proxy;
 
 /**
@@ -85,14 +83,15 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
         void setServices(List<ServiceMetrics> serviceMetrics);
 
         /**
-         * @param service set the selected service
+         * @param referenceMetrics metrics for all references deployed on the
+         *            server.
          */
-        void setService(ServiceMetrics service);
+        void setReferences(List<ServiceMetrics> referenceMetrics);
 
         /**
-         * @param serviceMetrics the metrics for the selected service.
+         * @param referenceMetrics the metrics for the selected reference.
          */
-        void setServiceMetrics(ServiceMetrics serviceMetrics);
+        void setReferenceMetrics(ServiceMetrics referenceMetrics);
 
         /**
          * @param systemMetrics the metrics for the system.
@@ -108,7 +107,6 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
     private final PlaceManager _placeManager;
     private final RevealStrategy _revealStrategy;
     private final SwitchYardStore _switchYardStore;
-    private String _serviceName;
 
     /**
      * Create a new RuntimePresenter.
@@ -130,21 +128,6 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
         _switchYardStore = switchYardStore;
     }
 
-    /**
-     * Notifies the presenter that the user has selected a service. The
-     * presenter will load the service details and pass them back to the view to
-     * be displayed.
-     * 
-     * @param serviceMetrics the selected service.
-     */
-    public void onServiceSelected(ServiceMetrics serviceMetrics) {
-        PlaceRequest request = new PlaceRequest(NameTokens.METRICS_PRESENTER);
-        if (serviceMetrics != null) {
-            request = request.with(NameTokens.SERVICE_NAME_PARAM, URL.encode(serviceMetrics.getName()));
-        }
-        _placeManager.revealRelativePlace(request, -1);
-    }
-
     @Override
     public void onServerSelectionChanged(boolean isRunning) {
         getView().clearMetrics();
@@ -164,15 +147,6 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
         super.onBind();
         getView().setPresenter(this);
         getEventBus().addHandler(ServerSelectionChanged.TYPE, this);
-    }
-
-    @Override
-    public void prepareFromRequest(PlaceRequest request) {
-        super.prepareFromRequest(request);
-        _serviceName = request.getParameter(NameTokens.SERVICE_NAME_PARAM, null);
-        if (_serviceName != null) {
-            _serviceName = URL.decode(_serviceName);
-        }
     }
 
     @Override
@@ -199,10 +173,11 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
 
     private void loadMetrics() {
         getView().setServices(null);
+        getView().setReferences(null);
         getView().clearMetrics();
         loadSystemMetrics();
         loadServicesList();
-        loadServiceMetrics();
+        loadReferencesList();
     }
 
     private void loadServicesList() {
@@ -219,17 +194,11 @@ public class MetricsPresenter extends Presenter<MetricsPresenter.MyView, Metrics
         });
     }
 
-    private void loadServiceMetrics() {
-        if (_serviceName == null) {
-            getView().setServiceMetrics(_switchYardStore.getBeanFactory().serviceMetrics().as());
-            return;
-        }
-        _switchYardStore.loadServiceMetrics(_serviceName, new AsyncCallback<ServiceMetrics>() {
-
+    private void loadReferencesList() {
+        _switchYardStore.loadAllReferenceMetrics(new AsyncCallback<List<ServiceMetrics>>() {
             @Override
-            public void onSuccess(ServiceMetrics result) {
-                getView().setService(result);
-                getView().setServiceMetrics(result);
+            public void onSuccess(List<ServiceMetrics> referenceMetrics) {
+                getView().setReferences(referenceMetrics);
             }
 
             @Override

@@ -110,6 +110,13 @@ public interface SwitchYardStore {
     void loadAllServiceMetrics(AsyncCallback<List<ServiceMetrics>> asyncCallback);
 
     /**
+     * Loads message metrics for the specified service.
+     * 
+     * @param asyncCallback the callback
+     */
+    void loadAllReferenceMetrics(AsyncCallback<List<ServiceMetrics>> asyncCallback);
+
+    /**
      * Loads message metrics for the entire system.
      * 
      * @param asyncCallback the callback
