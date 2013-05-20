@@ -19,9 +19,12 @@
 
 package org.switchyard.console.client.ui.application;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.as.console.client.core.DisposableViewImpl;
+import org.jboss.as.console.client.shared.properties.PropertyEditor;
+import org.jboss.as.console.client.shared.properties.PropertyRecord;
 import org.jboss.as.console.client.shared.viewframework.builder.OneToOneLayout;
 import org.jboss.as.console.client.shared.viewframework.builder.SimpleLayout;
 import org.jboss.ballroom.client.widgets.forms.Form;
@@ -50,6 +53,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
     private Form<Application> _applicationDetailsForm;
     private ApplicationServicesEditor _servicesEditor;
     private ApplicationReferencesList _referencesEditor;
+    private PropertyEditor _propertiesEditor;
     private ArtifactReferencesList _artifactReferencesList;
     private ApplicationTransformationsEditor _transformationsEditor;
     private ApplicationsList _applicationsList;
@@ -81,6 +85,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
 
         _servicesEditor = new ApplicationServicesEditor(_presenter);
         _referencesEditor = new ApplicationReferencesList(_presenter);
+        _propertiesEditor = new PropertyEditor(_presenter, true);
         _artifactReferencesList = new ArtifactReferencesList();
         _transformationsEditor = new ApplicationTransformationsEditor(_presenter);
         _validatorsList = new ValidatorsList();
@@ -101,11 +106,15 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
                         "Displays details for a specific application.  Select an application to see its implementation details.")
                 .setMaster(null, formWidget).addDetail("Services", _servicesEditor.asWidget())
                 .addDetail("References", _referencesEditor.asWidget())
+                .addDetail("Properties", _propertiesEditor.asWidget())
                 .addDetail("Artifacts", _artifactReferencesList.asWidget())
                 .addDetail("Transformers", _transformationsEditor.asWidget())
                 .addDetail("Validators", _validatorsList.asWidget());
         applicationDetailsLayout.build();
         formWidget.getParent().setStyleName("fill-layout-width");
+
+        /* disable updating "key" field. */
+        _propertiesEditor.getPropertyTable().getColumn(0).setFieldUpdater(null);
 
         SimpleLayout layout = new SimpleLayout()
                 .setPlain(true)
@@ -120,7 +129,7 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
 
     @Override
     public void setPresenter(ApplicationPresenter presenter) {
-        this._presenter = presenter;
+        _presenter = presenter;
     }
 
     @Override
@@ -137,6 +146,8 @@ public class ApplicationView extends DisposableViewImpl implements ApplicationPr
         _artifactReferencesList.setData(application == null ? null : application.getArtifacts());
         _servicesEditor.setApplication(application);
         _referencesEditor.setApplication(application);
+        _propertiesEditor.setProperties(application == null ? null : application.getName(), application == null
+                || application.getProperties() == null ? new ArrayList<PropertyRecord>() : application.getProperties());
         _transformationsEditor.setApplication(application);
         _validatorsList.setData(application == null ? null : application.getValidators());
     }

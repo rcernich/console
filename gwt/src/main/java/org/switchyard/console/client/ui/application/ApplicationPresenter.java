@@ -22,7 +22,8 @@ package org.switchyard.console.client.ui.application;
 import java.util.List;
 
 import org.jboss.as.console.client.Console;
-import org.jboss.as.console.client.shared.subsys.RevealStrategy;
+import org.jboss.as.console.client.shared.properties.PropertyManagement;
+import org.jboss.as.console.client.shared.properties.PropertyRecord;
 import org.jboss.ballroom.client.layout.LHSHighlightEvent;
 import org.switchyard.console.client.NameTokens;
 import org.switchyard.console.client.model.Application;
@@ -54,7 +55,8 @@ import com.gwtplatform.mvp.client.proxy.TabContentProxyPlace;
  * 
  * @author Rob Cernich
  */
-public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView, ApplicationPresenter.MyProxy> {
+public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView, ApplicationPresenter.MyProxy>
+        implements PropertyManagement {
 
     /**
      * MyProxy
@@ -90,7 +92,6 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
     }
 
     private final PlaceManager _placeManager;
-    private final RevealStrategy _revealStrategy;
     private final SwitchYardStore _switchYardStore;
     private String _applicationName;
 
@@ -101,16 +102,14 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
      * @param view the injected MyView.
      * @param proxy the injected MyProxy.
      * @param placeManager the injected PlaceManager.
-     * @param revealStrategy the RevealStrategy
      * @param switchYardStore the injected SwitchYardStore.
      */
     @Inject
     public ApplicationPresenter(EventBus eventBus, MyView view, MyProxy proxy, PlaceManager placeManager,
-            RevealStrategy revealStrategy, SwitchYardStore switchYardStore) {
+            SwitchYardStore switchYardStore) {
         super(eventBus, view, proxy);
 
         _placeManager = placeManager;
-        _revealStrategy = revealStrategy;
         _switchYardStore = switchYardStore;
     }
 
@@ -177,6 +176,39 @@ public class ApplicationPresenter extends Presenter<ApplicationPresenter.MyView,
                 new PlaceRequest(NameTokens.REFERENCES_PRESENTER).with(NameTokens.REFERENCE_NAME_PARAM,
                         URL.encode(reference.getName())).with(NameTokens.APPLICATION_NAME_PARAM,
                         URL.encode(application.getName())), -1);
+    }
+
+    @Override
+    public void onCreateProperty(String reference, PropertyRecord prop) {
+    }
+
+    @Override
+    public void onDeleteProperty(String reference, PropertyRecord prop) {
+    }
+
+    @Override
+    public void onChangeProperty(String reference, PropertyRecord prop) {
+        if (reference == null) {
+            return;
+        }
+        _switchYardStore.setApplicationProperty(reference, prop, new AsyncCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+            }
+
+            @Override
+            public void onFailure(Throwable caught) {
+                Console.error("Unknown error", caught.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void launchNewPropertyDialoge(String reference) {
+    }
+
+    @Override
+    public void closePropertyDialoge() {
     }
 
     @Override

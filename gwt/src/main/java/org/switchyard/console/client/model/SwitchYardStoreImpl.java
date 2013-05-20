@@ -40,6 +40,7 @@ import org.jboss.as.console.client.core.ApplicationProperties;
 import org.jboss.as.console.client.shared.dispatch.DispatchAsync;
 import org.jboss.as.console.client.shared.dispatch.impl.DMRAction;
 import org.jboss.as.console.client.shared.dispatch.impl.DMRResponse;
+import org.jboss.as.console.client.shared.properties.PropertyRecord;
 import org.jboss.as.console.client.shared.runtime.RuntimeBaseAddress;
 import org.jboss.as.console.client.shared.subsys.Baseadress;
 import org.jboss.dmr.client.ModelNode;
@@ -67,10 +68,12 @@ public class SwitchYardStoreImpl implements SwitchYardStore {
     private static final String LIST_SERVICES = "list-services";
     private static final String LIST_REFERENCES = "list-references";
     private static final String MODULE = "module";
+    private static final String PROPERTY = "property";
     private static final String READ_APPLICATION = "read-application";
     private static final String READ_SERVICE = "read-service";
     private static final String READ_REFERENCE = "read-reference";
     private static final String SERVICE_NAME = "service-name";
+    private static final String SET_APPLICATION_PROPERTY = "set-application-property";
     private static final String SHOW_METRICS = "show-metrics";
     private static final String SWITCHYARD = NameTokens.SUBSYSTEM;
 
@@ -605,6 +608,39 @@ public class SwitchYardStoreImpl implements SwitchYardStore {
                     return;
                 }
                 callback.onFailure(new Exception("Could not load artifact references."));
+            }
+        });
+    }
+
+    @Override
+    public void setApplicationProperty(final String applicationName, final PropertyRecord prop,
+            final AsyncCallback<Void> callback) {
+        // /subsystem=switchyard:set-application-property(name=applicationName,
+        // property=prop)
+
+        final ModelNode operation = new ModelNode();
+        final ModelNode address = Baseadress.get();
+        operation.get(OP).set(SET_APPLICATION_PROPERTY);
+        address.add(SUBSYSTEM, SWITCHYARD);
+        operation.get(OP_ADDR).set(address);
+        operation.get(NAME).set(applicationName);
+        operation.get(PROPERTY).add(prop.getKey(), prop.getValue());
+
+        _dispatcher.execute(new DMRAction(operation), new AsyncCallback<DMRResponse>() {
+
+            @Override
+            public void onFailure(Throwable caught) {
+                callback.onFailure(caught);
+            }
+
+            @Override
+            public void onSuccess(DMRResponse result) {
+                final ModelNode response = result.get();
+                if (response.hasDefined(RESULT)) {
+                    callback.onSuccess(null);
+                    return;
+                }
+                callback.onFailure(new Exception("Failure setting property:" + prop.getKey()));
             }
         });
     }

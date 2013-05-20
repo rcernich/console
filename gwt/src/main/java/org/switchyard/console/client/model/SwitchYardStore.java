@@ -21,6 +21,7 @@ package org.switchyard.console.client.model;
 
 import java.util.List;
 
+import org.jboss.as.console.client.shared.properties.PropertyRecord;
 import org.switchyard.console.client.BeanFactory;
 import org.switchyard.console.components.client.model.Component;
 
@@ -146,5 +147,14 @@ public interface SwitchYardStore {
      * @param callback the callback.
      */
     void loadReferences(AsyncCallback<List<Reference>> callback);
+
+    /**
+     * Sets the property on the application.
+     * 
+     * @param applicationName the application
+     * @param prop the property
+     * @param callback the callback
+     */
+    void setApplicationProperty(String applicationName, PropertyRecord prop, final AsyncCallback<Void> callback);
 
 }

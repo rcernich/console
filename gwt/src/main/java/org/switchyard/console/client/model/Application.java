@@ -20,6 +20,8 @@ package org.switchyard.console.client.model;
 
 import java.util.List;
 
+import org.jboss.as.console.client.shared.properties.PropertyRecord;
+
 /**
  * Application
  * 
@@ -90,4 +92,13 @@ public interface Application extends HasQName {
      */
     public void setValidators(List<Validator> validators);
 
+    /**
+     * @return the properties defined for this application
+     */
+    public List<PropertyRecord> getProperties();
+    
+    /**
+     * @param properties the properties defined for this application.
+     */
+    public void setProperties(List<PropertyRecord> properties);
 }
